@@ -33,5 +33,5 @@ actually think that for such a small grammar as this it is wholly linear. Those 
 
 If you have any problems getting it to run or whatever, contact me! :D
 
-`- Joanthan`
+`- Jonathan`
 
