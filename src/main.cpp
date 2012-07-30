@@ -1,5 +1,6 @@
 #include <iterator>
 #include <sstream>
+#include <iomanip>
 //=====================================================================
 #include <boost/program_options.hpp>
 //=====================================================================
@@ -66,7 +67,7 @@ void print_node(sooty::const_parseme_ptr_ref x) {
 			break;
 		
 		case parsid::number:
-			std::cout << x->value.real;
+			std::cout << std::setprecision(2) << x->value.real;
 			break;
 		
 		case parsid::variable:
@@ -278,9 +279,20 @@ int main(int arg_count, char* args[])
 		po::positional_options_description pod;
 		pod.add("input-file", -1);
 		
-		
-		po::store(po::command_line_parser(arg_count, args).options(all).positional(pod).run(), vm);
-		po::notify(vm);
+		try {
+			po::store(po::command_line_parser(arg_count, args).options(all).positional(pod).run(), vm);
+			po::notify(vm);
+		}
+		catch (const std::exception&) {
+			std::cout << "There was an error parsing the command line. Make sure, if using the " << std::endl
+				<< " -a command, to put the expression in quotes" << std::endl;
+			std::cout << std::endl;
+			std::cout << cmd_line << std::endl;
+			std::cout << "Examples:" << std::endl
+				<< "  sooty -r test.txt" << std::endl
+				<< "  sooty -ra \"4 + 5 * dragon - (12 * knight)\"" << std::endl;
+			return -1;
+		}
 		
 		if (vm.count("input-file") < 1) {
 			std::cout << cmd_line << std::endl;
@@ -292,6 +304,7 @@ int main(int arg_count, char* args[])
 		}
 		else {
 			std::ifstream file(vm["input-file"].as<std::string>().c_str());
+			file.unsetf(std::ifstream::skipws);
 			std::copy(std::istream_iterator<char>(file), std::istream_iterator<char>(), std::back_inserter(input));
 		}
 		
@@ -305,15 +318,15 @@ int main(int arg_count, char* args[])
 	{
 		sooty::lexer main_lexer =
 		+(
+			(+sooty::in_range('a', 'z'))[lexemifier.make(lexid::variable, sooty::any_channel, true)] |
+			(!sooty::char_('-') >> +sooty::in_range('0', '9'))[lexemifier.make<float>(lexid::integer, sooty::any_channel, true)] |
 			sooty::char_('+')[lexemifier.make(lexid::plus, sooty::any_channel)] |
 			sooty::char_('-')[lexemifier.make(lexid::dash, sooty::any_channel)] |
 			sooty::char_('*')[lexemifier.make(lexid::star, sooty::any_channel)] |
 			sooty::char_('/')[lexemifier.make(lexid::fwdslash, sooty::any_channel)] |
 			sooty::char_('(')[lexemifier.make(lexid::lparen, sooty::any_channel)] |
 			sooty::char_(')')[lexemifier.make(lexid::rparen, sooty::any_channel)] |
-			sooty::char_(' ') |
-			(+sooty::in_range('a', 'z'))[lexemifier.make(lexid::variable, sooty::any_channel, true)] |
-			(!sooty::char_('-') >> +sooty::in_range('0', '9'))[lexemifier.make<float>(lexid::integer, sooty::any_channel, true)]
+			sooty::char_(' ')
 		)
 		;
 		
@@ -383,7 +396,7 @@ int main(int arg_count, char* args[])
 			)
 			;
 		
-			
+		
 		additive_expression(lexemifier.list.begin(), lexemifier.list.end(), root);
 	}
 	
