@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sooty", "sooty.vcproj", "{2756CE13-828A-4D88-9F4B-9E0690362C59}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "atma", "..\dependencies\atma\project\atma.vcproj", "{3301E1FA-9F23-43C6-A5E1-183204867D44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2756CE13-828A-4D88-9F4B-9E0690362C59}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2756CE13-828A-4D88-9F4B-9E0690362C59}.Debug|Win32.Build.0 = Debug|Win32
+		{2756CE13-828A-4D88-9F4B-9E0690362C59}.Release|Win32.ActiveCfg = Release|Win32
+		{2756CE13-828A-4D88-9F4B-9E0690362C59}.Release|Win32.Build.0 = Release|Win32
+		{3301E1FA-9F23-43C6-A5E1-183204867D44}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3301E1FA-9F23-43C6-A5E1-183204867D44}.Debug|Win32.Build.0 = Debug|Win32
+		{3301E1FA-9F23-43C6-A5E1-183204867D44}.Release|Win32.ActiveCfg = Release|Win32
+		{3301E1FA-9F23-43C6-A5E1-183204867D44}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		AMDCaProjectFile = C:\Work\_other\sooty\project\CodeAnalyst\sooty.caw
+	EndGlobalSection
+EndGlobal

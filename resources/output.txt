@@ -1,0 +1,3 @@
+int _test_giraffe(int _test_legs = 4)
+{
+}
