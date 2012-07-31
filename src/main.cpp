@@ -113,22 +113,26 @@ float idiv(float lhs, float rhs) { return lhs / rhs; }
 //
 // @N refers to the index in x->children that is a parsid::number
 // @O refers to the other node
-void reduce_to_parent(sooty::parseme_ptr_ref parent, sooty::parseme_ptr_ref x, sooty::parseme_ptr_ref sibling, size_t N, size_t O, float(*oper)(float, float), bool swap = false)
+void reduce_to_parent(sooty::parseme_ptr_ref parent, sooty::parseme_ptr_ref x, sooty::parseme_ptr_ref sibling, size_t N, size_t O, float(*oper)(float, float), bool keep_oper = false)
 {
-	if (!swap)
-		parent->id = x->id;
+	sibling->value.real = (*oper)(sibling->value.real, x->children[N]->value.real);
+	x = x->children[O];
+}
+
+void reduce_to_x(sooty::parseme_ptr_ref parent, sooty::parseme_ptr_ref x, sooty::parseme_ptr_ref sibling, size_t N, size_t O, float(*oper)(float, float), bool keep_oper = false)
+{
+	x->children[N]->value.real = (*oper)(x->children[N]->value.real, sibling->value.real);
+	parent->id = x->id;
+	parent->value = x->value;
 	
-	parent->children[N]->id = parsid::number;
-	parent->children[N]->value = sooty::value_t( (*oper)(sibling->value.real, x->children[N]->value.real) );
-	
-	parent->children[O] = x->children[O];
-	parent->children[O]->parent = parent;
-	
-	parent->children[N]->children.clear();
-	
-	
-	if (swap)
-		std::swap(parent->children[O], parent->children[N]);
+	if (parent->children[0] != x) {
+		parent->children[0] = x->children[0];
+		parent->children[1] = x->children[1];
+	}
+	else {
+		parent->children[1] = x->children[1];
+		parent->children[0] = x->children[0];
+	}
 }
 
 sooty::parseme_ptr sibling_of(sooty::parseme_ptr_ref x) {
@@ -197,8 +201,9 @@ void reduce(sooty::parseme_ptr_ref x)
 	
 	// if we have a sibling, we defs have a parent
 	parseme_ptr parent = x->parent.lock();
-		
-	 if (x->id == parsid::addition) {
+	
+	// addition
+	if (x->id == parsid::addition) {
 		if (parent->id == parsid::addition) {
 			if (x->children[0]->id == parsid::number)
 				reduce_to_parent(parent, x, sibling, 0, 1, &add);
@@ -209,23 +214,37 @@ void reduce(sooty::parseme_ptr_ref x)
 			if (x->children[0]->id == parsid::number)
 				reduce_to_parent(parent, x, sibling, 0, 1, &sub);
 			else
-				reduce_to_parent(parent, x, sibling, 1, 0, &sub, true);
+				reduce_to_parent(parent, x, sibling, 1, 0, &sub);
 		}
 	}
+	// subtraction
 	else if (x->id == parsid::subtraction) {
 		if (parent->id == parsid::addition) {
-			if (x->children[0]->id == parsid::number)
-				reduce_to_parent(parent, x, sibling, 0, 1, &add);
+			if (parent->children[0] == x)
+				if (x->children[0]->id == parsid::number)
+					reduce_to_x(parent, x, sibling, 0, 1, &add);
+				else
+					reduce_to_parent(parent, x, sibling, 1, 0, &sub);
 			else
-				reduce_to_parent(parent, x, sibling, 1, 0, &sub, true);
+				if (x->children[0]->id == parsid::number)
+					reduce_to_x(parent, x, sibling, 0, 1, &add);
+				else
+					reduce_to_parent(parent, x, sibling, 1, 0, &sub);
 		}
 		else if (parent->id == parsid::subtraction) {
-			if (x->children[0]->id == parsid::number)
-				reduce_to_parent(parent, x, sibling, 0, 1, &sub);
+			if (parent->children[0] == x)
+				if (x->children[0]->id == parsid::number)
+					reduce_to_x(parent, x, sibling, 0, 1, &sub);
+				else
+					reduce_to_x(parent, x, sibling, 1, 0, &add);
 			else
-				reduce_to_parent(parent, x, sibling, 1, 0, &sub, true);
+				if (x->children[0]->id == parsid::number)
+					reduce_to_parent(parent, x, sibling, 0, 1, &sub);
+				else
+					reduce_to_parent(parent, x, sibling, 1, 0, &add);
 		}
 	}
+	// multiplication
 	else if (x->id == parsid::multiplication) {
 		if (parent->id == parsid::multiplication) {
 			if (x->children[0]->id == parsid::number)
@@ -449,4 +468,8 @@ int main(int arg_count, char* args[])
 	
 	sooty::depth_first_for_each(root, print_node, print_rparen);
 	std::cout << std::endl;
+	
+	
+	
+	system("pause");
 }
