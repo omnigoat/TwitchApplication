@@ -468,8 +468,4 @@ int main(int arg_count, char* args[])
 	
 	sooty::depth_first_for_each(root, print_node, print_rparen);
 	std::cout << std::endl;
-	
-	
-	
-	system("pause");
 }

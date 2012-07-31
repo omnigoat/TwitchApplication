@@ -35,3 +35,11 @@ If you have any problems getting it to run or whatever, contact me! :D
 
 `- Jonathan`
 
+# Edited 31/07/2012 : 18:30
+
+No idea if you've seen or cloned the repository yet - hopefully this ninja edit gets in before
+you do - I fixed a bunch of bugs. Most notably operators are now correctly left-associative, and
+not right-associative like they were. This means `4 - 3 - 2` correctly parses to
+`- (- 4 3) 2` instead of `- 4 (- 3 2)`. Some of the reducing has also been corrected to take
+into account non-commutative operators (`-` and `/` - although I still leave division alone
+for the most part).
