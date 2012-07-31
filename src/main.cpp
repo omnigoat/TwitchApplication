@@ -358,13 +358,27 @@ int main(int arg_count, char* args[])
 			sooty::store(additive_expression_stack, multiplicative_expression)
 			>>
 			(
-				+(match_insert(lexid::plus, parsid::addition) [
-					retrieve(additive_expression_stack) >> additive_expression
-				])
-				|
-				+(match_insert(lexid::dash, parsid::subtraction) [
-					sooty::retrieve(additive_expression_stack) >> additive_expression
-				])
+				(
+					+(
+						(match(lexid::plus, false) >>
+						sooty::store(additive_expression_stack,
+							insert(parsid::addition) [
+								sooty::retrieve(additive_expression_stack) >>
+								multiplicative_expression
+							]
+						))
+						|
+						(match(lexid::dash, false) >>
+						sooty::store(additive_expression_stack,
+							insert(parsid::subtraction) [
+								sooty::retrieve(additive_expression_stack) >>
+								multiplicative_expression
+							]
+						))
+					)
+					>>
+					sooty::retrieve(additive_expression_stack)
+				)
 				|
 				sooty::retrieve(additive_expression_stack)
 			)
@@ -373,16 +387,29 @@ int main(int arg_count, char* args[])
 		multiplicative_expression =
 			sooty::store(multiplicative_expression_stack, primary_expression)
 			>>
-			(
-				+(match_insert(lexid::star, parsid::multiplication) [
-					retrieve(multiplicative_expression_stack) >> multiplicative_expression
-				])
-				|
-				+(match_insert(lexid::fwdslash, parsid::division) [
-					sooty::retrieve(multiplicative_expression_stack) >> multiplicative_expression
-				])
-				|
+			((
+				+(
+					(match(lexid::star, false) >>
+					sooty::store(multiplicative_expression_stack,
+						insert(parsid::multiplication) [
+							sooty::retrieve(multiplicative_expression_stack) >>
+							primary_expression
+						]
+					))
+					|
+					(match(lexid::fwdslash, false) >>
+					sooty::store(multiplicative_expression_stack,
+						insert(parsid::division) [
+							sooty::retrieve(multiplicative_expression_stack) >>
+							primary_expression
+						]
+					))
+				)
+				>>
 				sooty::retrieve(multiplicative_expression_stack)
+			)
+			|
+			sooty::retrieve(multiplicative_expression_stack)
 			)
 			;
 		

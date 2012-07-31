@@ -333,8 +333,9 @@ sooty::parse_results_t sooty::detail::direct_parser_backend::operator()( const l
 
 sooty::parse_results_t sooty::detail::stack_store_parser_backend::operator()( const lexeme_list::const_iterator& begin, const lexeme_list::const_iterator& end, parseme_ptr& dest ) const
 {
-	stack.push( sooty::make_parseme(parseme_ptr(), 0, sooty::value_t()) );
-	parse_results_t results = P(begin, end, stack.top());
+	parseme_ptr parent = sooty::make_parseme(parseme_ptr(), 0, sooty::value_t());
+	parse_results_t results = P(begin, end, parent);
+	stack.push(parent);
 	if (!results.pass) {
 		stack.pop();
 	}
