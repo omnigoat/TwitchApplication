@@ -62,7 +62,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="E:\dev\projects\original_sooty\dependencies\boost\lib"
+				AdditionalLibraryDirectories="..\dependencies\boost\lib"
 				GenerateDebugInformation="true"
 			/>
 			<Tool
@@ -85,7 +85,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="@echo Copying library...&#x0D;&#x0A;copy /Y $(TargetPath) $(ProjectDir)\..\lib\$(TargetFileName) &gt; NUL&#x0D;&#x0A;REM $(TargetPath) --runtestsonly&#x0D;&#x0A;"
+				CommandLine="@echo Copying library...&#x0D;&#x0A;copy /Y &quot;$(TargetPath)&quot; &quot;$(ProjectDir)\..\lib\$(TargetFileName)&quot; &gt; NUL"
 			/>
 		</Configuration>
 		<Configuration
